@@ -8,7 +8,8 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #e5e7eb;
+  min-width: 100vw;
+  background: #82ff62;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -16,16 +17,20 @@ body {
   position: relative;
   width: 80vw;
   max-width: 100vw;
+  height: 70vh;
+  max-height: 100vh;
 }
 
 #game {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 100%;
   overflow: hidden;
-  background: #f9fafb;
-  border: 2px solid #111827;
-  border-radius: 6px;
+  background-image: url('assets/Sky.png');
+  background-size: auto;
+  background-position: center;
+  border: 5px solid #eaffe9;
+  border-radius: 20px;
 }
 
 #ground {
@@ -33,29 +38,26 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 24px;
-  background: repeating-linear-gradient(
-    -45deg,
-    #9ca3af 0,
-    #9ca3af 4px,
-    #6b7280 4px,
-    #6b7280 8px
-  );
+  height: 25%;
+  background-image: url(assets/Grass.png);
+  image-rendering: pixelated;
+  background-size: contain;
+  background-repeat: repeat-x;
+  border-top: 3px solid #25242e;
 }
 
 #dino {
   position: absolute;
-  left: 40px;
-  bottom: 24px; /* sits on the ground */
-  width: 32px;
-  height: 32px;
+  left: 5%;
+  bottom: 25%; /* sits on the ground */
+  width: 100px;
+  height: 100px;
   background: #111827;
-  border-radius: 4px;
 }
 
 .obstacle {
   position: absolute;
-  bottom: 24px;
+  bottom: 25%;
   width: 18px;
   height: 36px;
   background: #111827;
