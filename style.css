@@ -5,12 +5,29 @@
 body {
   margin: 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   min-width: 100vw;
   background: #c0ffb0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.header {
+  text-align: center;
+  color: #16552d;
+  margin-top: -5rem;
+  margin-bottom: .5rem;
+}
+
+.header h1 {
+  margin-bottom: 0.5rem;
+  font-size: 3rem;
+}
+
+.header p {
+  font-size: 1.5rem;
 }
 
 .game-wrapper {
@@ -45,30 +62,32 @@ body {
   background-size: contain;
   background-repeat: repeat-x;
   border-top: 3px solid #25242e;
+  z-index: 1;
 }
 
-#dino {
+#capy {
   position: absolute;
   width: 120px;
   height: 105px;
   background-image: url('assets/capyWalk.png');
   transform: scaleX(-1);
-  transform: scale(5);
   background-size: cover;
   image-rendering: pixelated;
   background-repeat: no-repeat;
   background-position: 0 0;
+  z-index: 3;
 }
 
 .obstacle {
   position: absolute;
-  width: 75px;
-  height: 75px;
+  width: 96px;
+  height: 96px;
   background-image: url('assets/catRun.png');
   background-size: cover;
   image-rendering: pixelated;
   background-repeat: no-repeat;
   background-position: 0 0;
+  z-index: 3;
 }
 
 .hud {
@@ -82,6 +101,13 @@ body {
 #score {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 2rem;
+  color: #16552d;
+}
+
+#high-score {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 2rem;
+  color: #16552d;
 }
 
 #restart {
@@ -92,8 +118,57 @@ body {
   background: #f9fafb;
   color: #16552d;
   cursor: pointer;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 #restart.hidden {
   display: none;
+}
+
+#game-over {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+#game-over.hidden {
+  display: none;
+}
+
+#night-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  pointer-events: none;
+}
+
+#night-overlay.hidden {
+  display: none;
+}
+
+.game-over-text {
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+.game-over-text h1 {
+  margin: 0 0 1rem 0;
+  font-size: 3rem;
+}
+
+.game-over-text p {
+  margin: 0;
+  font-size: 1.5rem;
 }

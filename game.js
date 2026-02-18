@@ -1,7 +1,9 @@
 const gameEl = document.getElementById('game');
-const dinoEl = document.getElementById('dino');
+const capyEl = document.getElementById('capy');
 const scoreEl = document.getElementById('score');
-const restartBtn = document.getElementById('restart');
+const highScoreEl = document.getElementById('high-score');
+const nightOverlayEl = document.getElementById('night-overlay');
+const gameOverEl = document.getElementById('game-over');
 
 let lastTime = null;
 let gameSpeed = 1;
@@ -13,43 +15,43 @@ const gameWidth = gameEl.clientWidth;
 
 const GROUND_HEIGHT = Number.parseInt(gameHeight * 0.25); 
 
-const DINO_WIDTH = 120;
-const DINO_HEIGHT = 105;
-const DINO_FRAME_WIDTH = 120; // width of each frame in sprite sheet
-const DINO_FRAMES = 5; // number of frames in your sprite sheet
-const DINO_ANIMATION_SPEED = 0.1; // seconds per frame
-const GRAVITY = 2700; // pixels per second^2
-const JUMP_VELOCITY = 1000; // pixels per second
+const CAPY_WIDTH = 120;
+const CAPY_HEIGHT = 105;
+const CAPY_FRAME_WIDTH = 120;
+const CAPY_FRAMES = 5;
+const CAPY_ANIMATION_SPEED = 0.1; // seconds per frame
+const GRAVITY = 2800; // pixels per second^2
+const JUMP_VELOCITY = 1300; // pixels per second
 
-const dino = {
+const capy = {
     x: Number.parseInt(gameWidth * 0.05),
-    y: gameHeight - GROUND_HEIGHT - DINO_HEIGHT,
+    y: gameHeight - GROUND_HEIGHT - CAPY_HEIGHT,
     vy: 0,
     isJumping: false,
     isOnGround: true
 };
 
-let dinoAnimationTime = 0;
+let capyAnimationTime = 0;
 
 function setDinoPosition() {
-    // Only animate when dino is on ground
-    if (dino.isOnGround) {
-        dinoAnimationTime += 0.01; // rough delta, update with actual delta
-        const frameIndex = Math.floor((dinoAnimationTime / DINO_ANIMATION_SPEED) % DINO_FRAMES);
-        const bgPositionX = frameIndex * DINO_FRAME_WIDTH;
-        dinoEl.style.backgroundPositionX = `-${bgPositionX}px`;
+    // Only animate when capy is on ground
+    if (capy.isOnGround) {
+        capyAnimationTime += 0.01; // rough delta, update with actual delta
+        const frameIndex = Math.floor((capyAnimationTime / CAPY_ANIMATION_SPEED) % CAPY_FRAMES);
+        const bgPositionX = frameIndex * CAPY_FRAME_WIDTH;
+        capyEl.style.backgroundPositionX = `-${bgPositionX}px`;
     } else {
         // Reset to first frame when jumping
-        dinoEl.style.backgroundPositionX = '0px';
+        capyEl.style.backgroundPositionX = '0px';
     }
-    dinoEl.style.transform = `translate(${dino.x}px, ${dino.y}px) scaleX(-1)`;
+    capyEl.style.transform = `translate(${capy.x}px, ${capy.y}px) scaleX(-1)`;
 }
 
 function handleJump() {
-    if (!dino.isOnGround || gameOver) return;
-    dino.vy = JUMP_VELOCITY;
-    dino.isJumping = true;
-    dino.isOnGround = false;
+    if (!capy.isOnGround || gameOver) return;
+    capy.vy = JUMP_VELOCITY;
+    capy.isJumping = true;
+    capy.isOnGround = false;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -59,15 +61,15 @@ if (e.code === 'Space' || e.code === 'ArrowUp') {
 });
 
 function updateDino(delta) {
-    dino.vy -= GRAVITY * delta;
-    dino.y -= dino.vy * delta;
+    capy.vy -= GRAVITY * delta;
+    capy.y -= capy.vy * delta;
 
-    const groundY = gameHeight - GROUND_HEIGHT - DINO_HEIGHT;
-    if (dino.y > groundY) {
-        dino.y = groundY;
-        dino.vy = 0;
-        dino.isJumping = false;
-        dino.isOnGround = true;
+    const groundY = gameHeight - GROUND_HEIGHT - CAPY_HEIGHT;
+    if (capy.y > groundY) {
+        capy.y = groundY;
+        capy.vy = 0;
+        capy.isJumping = false;
+        capy.isOnGround = true;
     }
 
     setDinoPosition();
@@ -76,6 +78,9 @@ function updateDino(delta) {
 const OBSTACLE_MIN_GAP = Number.parseInt(gameWidth * 0.5); 
 const OBSTACLE_MAX_GAP = Number.parseInt(gameWidth * 0.65);
 const OBSTACLE_SPEED = 300; // base speed, scaled by gameSpeed
+const OBSTACLE_FRAME_WIDTH = 96; // width of each frame in sprite sheet
+const OBSTACLE_FRAMES = 7; // number of frames in your sprite sheet
+const OBSTACLE_ANIMATION_SPEED = 0.1; // seconds per frame
 
 let obstacles = [];
 let nextObstacleTime = 0;
@@ -88,9 +93,10 @@ function createObstacle() {
     const obstacle = {
         el: obstacleEl,
         x: gameWidth,
-        y: gameHeight - GROUND_HEIGHT - 75,
-        width: 75,
-        height: 75
+        y: gameHeight - GROUND_HEIGHT - 96,
+        width: 96,
+        height: 96,
+        animationTime: 0
     };
 
     obstacleEl.style.transform = `translate(${obstacle.x}px, ${obstacle.y}px)`;
@@ -107,6 +113,13 @@ function updateObstacles(delta) {
 
     obstacles.forEach((obstacle) => {
         obstacle.x -= OBSTACLE_SPEED * gameSpeed * delta;
+        
+        // Animate sprite
+        obstacle.animationTime += delta;
+        const frameIndex = Math.floor((obstacle.animationTime / OBSTACLE_ANIMATION_SPEED) % OBSTACLE_FRAMES);
+        const bgPositionX = frameIndex * OBSTACLE_FRAME_WIDTH;
+        obstacle.el.style.backgroundPositionX = `-${bgPositionX}px`;
+        
         obstacle.el.style.transform = `translate(${obstacle.x}px, ${obstacle.y}px)`;
     });
 
@@ -129,11 +142,11 @@ function rectsOverlap(r1, r2) {
 }
 
 function checkCollisions() {
-    const dinoRect = {
-        x: dino.x,
-        y: dino.y,
-        width: DINO_WIDTH,
-        height: DINO_HEIGHT
+    const capyRect = {
+        x: capy.x,
+        y: capy.y,
+        width: CAPY_WIDTH,
+        height: CAPY_HEIGHT
     };
 
     for (const obstacle of obstacles) {
@@ -144,40 +157,44 @@ function checkCollisions() {
         height: obstacle.height
         };
 
-        if (rectsOverlap(dinoRect, obstacleRect)) {
+        if (rectsOverlap(capyRect, obstacleRect)) {
         handleGameOver();
         break;
         }
     }
 }
 
-let bestScore = Number(localStorage.getItem('dinoBestScore') || 0);
+let bestScore = Number(localStorage.getItem('capyBestScore') || 0);
 
 function updateBestScore() {
   if (score > bestScore) {
     bestScore = score;
-    localStorage.setItem('dinoBestScore', String(bestScore));
+    localStorage.setItem('capyBestScore', String(bestScore));
   }
 }
 
 function handleGameOver() {
     gameOver = true;
     updateBestScore();
-    restartBtn.classList.remove('hidden');
+    document.getElementById('game-over').classList.remove('hidden');
 }
 
-const SCORE_PER_SECOND = 40;
-const SPEED_INCREASE_RATE = 0.05; // per seco nd
+const SCORE_PER_SECOND = 10;
+const SPEED_INCREASE_RATE = 0.05; // per second
 
 function updateScore(delta) {
     score += SCORE_PER_SECOND * delta * gameSpeed;
     const displayScore = String(Math.floor(score)).padStart(5, '0');
     scoreEl.textContent = displayScore;
+    
+    // Update high score display
+    const displayHighScore = String(Math.floor(bestScore)).padStart(5, '0');
+    highScoreEl.textContent = `Best: ${displayHighScore}`;
 
     // Gradually increase game speed
     gameSpeed += SPEED_INCREASE_RATE * delta;
 
-    //   updateDayNight();
+    updateDayNight();
 }
 
 function resetGame() {
@@ -187,22 +204,23 @@ function resetGame() {
     score = 0;
     gameSpeed = 1;
     scoreEl.textContent = '00000';
+    isNight = false;
+    nextToggleScore = 500;
+    updateDayNight();
 
-    dino.y = gameHeight - GROUND_HEIGHT - DINO_HEIGHT;
-    dino.vy = 0;
-    dino.isOnGround = true;
+    capy.y = gameHeight - GROUND_HEIGHT - CAPY_HEIGHT;
+    capy.vy = 0;
+    capy.isOnGround = true;
     setDinoPosition();
 
     gameOver = false;
-    restartBtn.classList.add('hidden');
+    gameOverEl.classList.add('hidden');
     lastTime = null; // reset time so delta doesn't spike
     requestAnimationFrame(update);
 }
 
-restartBtn.addEventListener('click', resetGame);
-
 document.addEventListener('keydown', (e) => {
-    if ((e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'Enter') && gameOver) {
+    if ((e.code === 'Space' || e.code === 'ArrowUp') && gameOver) {
         resetGame();
     }
 });
@@ -220,13 +238,11 @@ function updateDayNight() {
     if (score >= nextToggleScore) {
         isNight = !isNight;
         nextToggleScore += 500;
-
+        
         if (isNight) {
-            gameEl.style.background = '#111827';
-            gameEl.style.borderColor = '#e5e7eb';
+            nightOverlayEl.classList.remove('hidden');
         } else {
-            gameEl.style.background = '#f9fafb';
-            gameEl.style.borderColor = '#111827';
+            nightOverlayEl.classList.add('hidden');
         }
     }
 }

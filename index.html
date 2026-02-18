@@ -4,17 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Capybara Caper</title>
+  <link rel="icon" href="assets/favicon.ico">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="header">
+    <h1>Capybara Caper</h1>
+    <p>Press SPACE or Tap to jump!</p>
+  </div>
   <div class="game-wrapper">
     <div id="game">
+      <div id="night-overlay" class="hidden"></div>
       <div id="ground"></div>
-      <div id="dino"></div>
+      <div id="capy"></div>
+      <div id="game-over" class="hidden">
+        <div class="game-over-text">
+          <h1>Game Over</h1>
+          <p>Press SPACE or Tap to Play Again!</p>
+        </div>
+      </div>
     </div>
     <div class="hud">
       <span id="score">00000</span>
-      <button id="restart" class="hidden">Play Again!</button>
+      <span id="high-score">00000</span>
     </div>
   </div>
 
