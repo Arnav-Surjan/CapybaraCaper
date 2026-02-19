@@ -19,7 +19,7 @@ const CAPY_WIDTH = 120;
 const CAPY_HEIGHT = 105;
 const CAPY_FRAME_WIDTH = 120;
 const CAPY_FRAMES = 5;
-const CAPY_ANIMATION_SPEED = 0.1; // seconds per frame
+const CAPY_ANIMATION_SPEED = 0.05; // seconds per frame
 const GRAVITY = 2800; // pixels per second^2
 const JUMP_VELOCITY = 1300; // pixels per second
 
@@ -33,7 +33,7 @@ const capy = {
 
 let capyAnimationTime = 0;
 
-function setDinoPosition() {
+function setCapyPosition() {
     // Only animate when capy is on ground
     if (capy.isOnGround) {
         capyAnimationTime += 0.01; // rough delta, update with actual delta
@@ -60,7 +60,7 @@ if (e.code === 'Space' || e.code === 'ArrowUp') {
 }
 });
 
-function updateDino(delta) {
+function updateCapy(delta) {
     capy.vy -= GRAVITY * delta;
     capy.y -= capy.vy * delta;
 
@@ -72,7 +72,7 @@ function updateDino(delta) {
         capy.isOnGround = true;
     }
 
-    setDinoPosition();
+    setCapyPosition();
 }
 
 const OBSTACLE_MIN_GAP = Number.parseInt(gameWidth * 0.5); 
@@ -211,7 +211,7 @@ function resetGame() {
     capy.y = gameHeight - GROUND_HEIGHT - CAPY_HEIGHT;
     capy.vy = 0;
     capy.isOnGround = true;
-    setDinoPosition();
+    setCapyPosition();
 
     gameOver = false;
     gameOverEl.classList.add('hidden');
@@ -267,7 +267,7 @@ function update(time) {
 
     if (gameOver) return;
 
-    updateDino(delta);
+    updateCapy(delta);
     updateObstacles(delta);
     updateScore(delta);
     checkCollisions();
