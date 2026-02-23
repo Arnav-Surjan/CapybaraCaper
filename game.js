@@ -5,6 +5,13 @@ const highScoreEl = document.getElementById('high-score');
 const nightOverlayEl = document.getElementById('night-overlay');
 const gameOverEl = document.getElementById('game-over');
 const youWonEl = document.getElementById('you-won');
+// Audio assets
+const gameOverSound = new Audio('assets/gameOver.wav');
+const youWonSound = new Audio('assets/youWon.wav');
+gameOverSound.preload = 'auto';
+youWonSound.preload = 'auto';
+gameOverSound.volume = 1;
+youWonSound.volume = 1;
 
 let lastTime = null;
 let gameSpeed = 1;
@@ -196,6 +203,13 @@ function showYouWon() {
         isPausedForWin = true;
         winShown = true;
         if (youWonEl) youWonEl.classList.remove('hidden');
+        // play win sound (safe-guard promise rejection)
+        try {
+            youWonSound.currentTime = 0;
+            youWonSound.play().catch(() => {});
+        } catch (e) {
+            // ignore if playback is blocked
+        }
 }
 
 function hideYouWon(continueGame = false) {
@@ -212,6 +226,12 @@ function handleGameOver() {
     gameOver = true;
     updateBestScore();
     gameOverEl.classList.remove('hidden');
+    try {
+        gameOverSound.currentTime = 0;
+        gameOverSound.play().catch(() => {});
+    } catch (e) {
+        // ignore play errors
+    }
 }
 
 const SCORE_PER_SECOND = 10;
