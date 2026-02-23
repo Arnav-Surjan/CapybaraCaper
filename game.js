@@ -4,11 +4,14 @@ const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('high-score');
 const nightOverlayEl = document.getElementById('night-overlay');
 const gameOverEl = document.getElementById('game-over');
+const youWonEl = document.getElementById('you-won');
 
 let lastTime = null;
 let gameSpeed = 1;
 let gameOver = false;
 let score = 0;
+let winShown = false;
+let isPausedForWin = false;
 
 const gameHeight = gameEl.clientHeight; 
 const gameWidth = gameEl.clientWidth;
@@ -164,6 +167,22 @@ function checkCollisions() {
     }
 }
 
+let isNight = false;
+let nextToggleScore = 500; // first flip around 500 pts
+
+function updateDayNight() {
+    if (score >= nextToggleScore) {
+        isNight = !isNight;
+        nextToggleScore += 500;
+        
+        if (isNight) {
+            nightOverlayEl.classList.remove('hidden');
+        } else {
+            nightOverlayEl.classList.add('hidden');
+        }
+    }
+}
+
 let bestScore = Number(localStorage.getItem('capyBestScore') || 0);
 
 function updateBestScore() {
@@ -173,10 +192,26 @@ function updateBestScore() {
   }
 }
 
+function showYouWon() {
+        isPausedForWin = true;
+        winShown = true;
+        if (youWonEl) youWonEl.classList.remove('hidden');
+}
+
+function hideYouWon(continueGame = false) {
+        if (youWonEl) youWonEl.classList.add('hidden');
+        isPausedForWin = false;
+        if (continueGame) {
+                // resume loop, reset lastTime to avoid large delta
+                lastTime = null;
+                requestAnimationFrame(update);
+        }
+}
+
 function handleGameOver() {
     gameOver = true;
     updateBestScore();
-    document.getElementById('game-over').classList.remove('hidden');
+    gameOverEl.classList.remove('hidden');
 }
 
 const SCORE_PER_SECOND = 10;
@@ -195,6 +230,11 @@ function updateScore(delta) {
     gameSpeed += SPEED_INCREASE_RATE * delta;
 
     updateDayNight();
+
+    // Trigger win screen once at 1000 points
+    if (!winShown && score >= 1000) {
+        showYouWon();
+    }
 }
 
 function resetGame() {
@@ -206,7 +246,7 @@ function resetGame() {
     scoreEl.textContent = '00000';
     isNight = false;
     nextToggleScore = 500;
-    updateDayNight();
+    nightOverlayEl.classList.add('hidden');    
 
     capy.y = gameHeight - GROUND_HEIGHT - CAPY_HEIGHT;
     capy.vy = 0;
@@ -214,6 +254,9 @@ function resetGame() {
     setCapyPosition();
 
     gameOver = false;
+    winShown = false;
+    isPausedForWin = false;
+    if (youWonEl) youWonEl.classList.add('hidden');
     gameOverEl.classList.add('hidden');
     lastTime = null; // reset time so delta doesn't spike
     requestAnimationFrame(update);
@@ -225,36 +268,26 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-document.addEventListener('keydown', (e) => {
-if (e.code === 'Escape') {
-    handleGameOver();
-}
-});
-
-let isNight = false;
-let nextToggleScore = 500; // first flip around 500 pts
-
-function updateDayNight() {
-    if (score >= nextToggleScore) {
-        isNight = !isNight;
-        nextToggleScore += 500;
-        
-        if (isNight) {
-            nightOverlayEl.classList.remove('hidden');
-        } else {
-            nightOverlayEl.classList.add('hidden');
-        }
-    }
-}
-
 gameEl.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    if (isPausedForWin) {
+        hideYouWon(true);
+        return;
+    }
     if (gameOver) {
         resetGame();
     } else {
         handleJump();
     }
 }, { passive: false });
+
+// Keyboard shortcuts while win overlay is visible
+document.addEventListener('keydown', (e) => {
+    if (!isPausedForWin) return;
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+        hideYouWon(true);
+    }
+});
 
 function update(time) {
     if (lastTime === null) {
@@ -266,6 +299,8 @@ function update(time) {
     lastTime = time;
 
     if (gameOver) return;
+
+    if (isPausedForWin) return;
 
     updateCapy(delta);
     updateObstacles(delta);

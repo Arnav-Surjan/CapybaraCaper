@@ -166,9 +166,48 @@ body {
 .game-over-text h1 {
   margin: 0 0 1rem 0;
   font-size: 3rem;
+  color: red;
 }
+
 
 .game-over-text p {
   margin: 0;
   font-size: 1.5rem;
+  color: red;
+}
+
+/* You Won overlay reuses game-over styling but adds button layout */
+#you-won {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11;
+}
+
+#you-won.hidden {
+  display: none;
+}
+
+.you-won-text {
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+.you-won-text h1 {
+  margin: 0 0 1rem 0;
+  font-size: 3rem;
+  color: #62ff3b;
+}
+
+.you-won-text p {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #62ff3b;
 }
